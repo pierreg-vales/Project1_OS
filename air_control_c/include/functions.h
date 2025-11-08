@@ -13,7 +13,7 @@
 #include <unistd.h>
 
 extern int* array_mmap;
-extern pthread_mutex_t state_lock, runway1_lock, runway2_lock;
+extern pthread_mutex_t state_lock;
 void MemoryCreate();
 void SigHandler2(int signal);
 void* TakeOffsFunction(void* arg);

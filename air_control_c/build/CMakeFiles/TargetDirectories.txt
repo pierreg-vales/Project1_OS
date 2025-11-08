@@ -1,3 +1,0 @@
-/home/fslabs/os_101_16/Desktop/Labs/PP1/air_control_c/build/CMakeFiles/air_control_c.dir
-/home/fslabs/os_101_16/Desktop/Labs/PP1/air_control_c/build/CMakeFiles/edit_cache.dir
-/home/fslabs/os_101_16/Desktop/Labs/PP1/air_control_c/build/CMakeFiles/rebuild_cache.dir

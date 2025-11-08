@@ -2,6 +2,8 @@
 
 #define SHM_NAME "/shm_pid"
 
+pthread_mutex_t state_lock;
+
 int main() {
   // TODO 1: Call the function that creates the shared memory segment.
   MemoryCreate();
