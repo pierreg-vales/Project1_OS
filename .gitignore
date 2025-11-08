@@ -1,0 +1,77 @@
+# =========================
+# macOS system files
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+.DocumentRevisions-V100
+.fseventsd
+*.swp
+*.swo
+
+# =========================
+# Linux / Ubuntu / WSL
+# =========================
+*~
+*.swp
+*.swo
+*#                # Emacs backup files
+*.bak
+*.tmp
+
+# =========================
+# Windows system files
+# =========================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# =========================
+# Build / CMake / Make
+# =========================
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.exe
+*.out
+
+# =========================
+# Editor / IDE
+# =========================
+# VS Code
+.vscode/
+
+# CLion / JetBrains
+.idea/
+*.iml
+
+# Vim / Neovim
+*.swp
+*.swo
+*.swn
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Temporary / Misc
+# =========================
+*.class
+*.pyc
+*.pyo
+*.orig
+*.rej
