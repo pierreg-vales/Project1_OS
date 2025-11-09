@@ -25,7 +25,7 @@ _libc.shm_unlink.restype = ctypes.c_int
 
 TOTAL_TAKEOFFS = 20
 STRIPS = 5
-SHM_NAME = b"/shm_pids"
+SHM_NAME = b"/shm_pids_"
 RADIO_PID=0
 shm_data = []
 

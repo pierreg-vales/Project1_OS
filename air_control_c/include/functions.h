@@ -1,5 +1,5 @@
-#ifndef INCLUDE_FUNCTIONS_H_
-#define INCLUDE_FUNCTIONS_H_
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
 
 #include <fcntl.h>
 #include <pthread.h>
@@ -12,10 +12,20 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+// Global variables
+extern int planes;
+extern int takeoffs;
+extern int total_takeoffs;
 extern int* array_mmap;
-extern pthread_mutex_t state_lock;
+extern int TOTAL_TAKEOFFS;
+extern int shm_block;
+
+// Mutexes
+extern pthread_mutex_t state_lock, track1_lock, track2_lock;
+
+// Functions
 void MemoryCreate();
 void SigHandler2(int signal);
 void* TakeOffsFunction(void* arg);
 
-#endif  // INCLUDE_FUNCTIONS_H_
+#endif

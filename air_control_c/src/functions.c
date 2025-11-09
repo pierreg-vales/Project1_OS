@@ -3,19 +3,17 @@
 #define N 3
 #define SIZE N * sizeof(int)
 
-#define SHM_NAME "/shm_pid"
+#define SHM_NAME "/shm_pids_"
 
 int planes = 0;
 int takeoffs = 0;
 int total_takeoffs = 0;
 int* array_mmap = NULL;
 int TOTAL_TAKEOFFS = 20;
+int shm_block;
 
 void MemoryCreate() {
-  // TODO2: create the shared memory segment, configure it and store the PID of
-  // the process in the first position of the memory block.
-
-  int shm_block = shm_open(SHM_NAME, O_CREAT | O_RDWR, 0666);
+  shm_block = shm_open(SHM_NAME, O_CREAT | O_RDWR, 0666);
   ftruncate(shm_block, SIZE);
   array_mmap = mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_block, 0);
 
@@ -25,6 +23,7 @@ void MemoryCreate() {
   }
 
   array_mmap[0] = getpid();
+  return;
 }
 
 void SigHandler2(int signal) {
@@ -34,12 +33,65 @@ void SigHandler2(int signal) {
 }
 
 void* TakeOffsFunction(void* arg) {
-  // TODO: implement the logic to control a takeoff thread
-  //    Use a loop that runs while total_takeoffs < TOTAL_TAKEOFFS
-  //    Use runway1_lock or runway2_lock to simulate a locked runway
-  //    Use state_lock for safe access to shared variables (planes,
-  //    takeoffs, total_takeoffs)
-  //    Simulate the time a takeoff takes with sleep(1)
-  //    Send SIGUSR1 every 5 local takeoffs
-  //    Send SIGTERM when the total takeoffs target is reached
+  while (total_takeoffs < TOTAL_TAKEOFFS) {
+    int track1 = pthread_mutex_trylock(&track1_lock);
+    int track2 = -1;
+    
+    if (track1 != 0) {
+        // Track 1 failed, try track 2
+        track2 = pthread_mutex_trylock(&track2_lock);
+    }
+    
+    // If both failed, sleep and retry
+    if (track1 != 0 && track2 != 0) {
+        usleep(1000);
+        continue;
+    }
+    
+    // We got a track! Figure out which one
+    pthread_mutex_t* available;
+    if (track1 == 0) {
+        available = &track1_lock;
+    } else {
+        available = &track2_lock;
+    }
+    
+    // Check if planes are available
+    pthread_mutex_lock(&state_lock);
+    if (planes <= 0) {
+        // No planes available, release everything and retry
+        pthread_mutex_unlock(&state_lock);
+        pthread_mutex_unlock(available);
+        usleep(1000);
+        continue;
+    }
+    
+    // Planes available, proceed with takeoff
+    planes -= 1;
+    takeoffs += 1;
+    total_takeoffs += 1;
+    
+    
+    if (takeoffs == 5) {
+        kill(array_mmap[1], SIGUSR1);
+        takeoffs = 0;
+    }
+    pthread_mutex_unlock(&state_lock);
+    
+    sleep(1);  // Simulate takeoff time
+    pthread_mutex_unlock(available);
+  }
+  
+  // Only one thread should send SIGTERM
+  pthread_mutex_lock(&state_lock);
+  static int signals_sent = 0;
+  if (!signals_sent) {
+      usleep(100000);  // Wait for last SIGUSR1 to be processed
+      kill(array_mmap[1], SIGTERM);   // Send to radio
+      kill(array_mmap[2], SIGTERM);   // Send to ground_control
+      signals_sent = 1;
+  }
+  pthread_mutex_unlock(&state_lock);
+  
+  return NULL;
 }
